@@ -59,7 +59,7 @@ export default function AccountantDashboard() {
     <div className="space-y-8">
       <div className="flex justify-between items-center animate-in slide-in-from-top duration-500">
         <div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             Accountant Dashboard
           </h2>
           <p className="text-gray-600 mt-2 flex items-center space-x-1">

@@ -59,7 +59,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div className="flex justify-between items-center animate-in slide-in-from-top duration-500">
         <div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             Admin Dashboard
           </h2>
           <p className="text-gray-600 mt-2 flex items-center space-x-1">
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
           return (
             <Card
               key={index}
-              className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-bottom duration-500"
+              className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-bottom "
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="relative">
-                <div className="text-3xl font-bold text-gray-800 mb-1">{stat.value}</div>
+                <div className="text-xl font-bold text-gray-800 mb-1">{stat.value}</div>
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-600">{stat.description}</p>
                   <div

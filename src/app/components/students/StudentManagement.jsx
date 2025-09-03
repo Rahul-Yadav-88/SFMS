@@ -121,7 +121,7 @@ export default function StudentManagement() {
             <Users className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Student Management
             </h2>
             <p className="text-gray-600 flex items-center space-x-1">
@@ -132,7 +132,7 @@ export default function StudentManagement() {
         </div>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-in slide-in-from-right duration-500">
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 animate-in slide-in-from-right duration-500">
               <Plus className="mr-2 h-4 w-4" />
               Add Student
             </Button>
@@ -236,7 +236,7 @@ export default function StudentManagement() {
       </div>
 
       {/* Enhanced Filters */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-left duration-500">
+      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-left">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b">
           <CardTitle className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
@@ -276,7 +276,7 @@ export default function StudentManagement() {
       </Card>
 
       {/* Enhanced Students Table */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-bottom duration-700">
+      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-bottom duration-700">
         <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -308,7 +308,7 @@ export default function StudentManagement() {
                 {filteredStudents.map((student, index) => (
                   <TableRow
                     key={student.id}
-                    className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 animate-in slide-in-from-left duration-500"
+                    className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all animate-in slide-in-from-left duration-500"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <TableCell className="font-medium text-blue-600">{student.rollNo}</TableCell>

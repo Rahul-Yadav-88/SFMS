@@ -42,7 +42,7 @@ export default function StudentDashboard() {
             <GraduationCap className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Student Dashboard
             </h2>
             <p className="text-gray-600 flex items-center space-x-1">

@@ -191,7 +191,7 @@ export default function FeeDues() {
             <AlertCircle className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
               Fee Dues Management
             </h2>
             <p className="text-gray-600 flex items-center space-x-1">
