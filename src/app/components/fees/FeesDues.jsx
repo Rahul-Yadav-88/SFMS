@@ -203,7 +203,7 @@ export default function FeeDues() {
         <div className="flex space-x-3">
           <Button
             onClick={sendBulkReminders}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-in slide-in-from-right duration-500"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 animate-in slide-in-from-right duration-500"
           >
             <Send className="mr-2 h-4 w-4" />
             Send Bulk Reminders
@@ -220,7 +220,7 @@ export default function FeeDues() {
       </div>
 
       {/* Enhanced Filters */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-left duration-500">
+      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-left duration-500">
         <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50 border-b">
           <CardTitle className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg">
@@ -272,7 +272,7 @@ export default function FeeDues() {
       </Card>
 
       {/* Enhanced Students with Dues Table */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-bottom duration-700">
+      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-bottom duration-700">
         <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50 border-b">
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -306,7 +306,7 @@ export default function FeeDues() {
                 {filteredStudents.map((student, index) => (
                   <TableRow
                     key={student.id}
-                    className="hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all duration-300 animate-in slide-in-from-left duration-500"
+                    className="hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all animate-in slide-in-from-left duration-500"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <TableCell className="font-medium text-blue-600">{student.rollNo}</TableCell>
@@ -376,7 +376,7 @@ export default function FeeDues() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-left duration-500">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-left duration-500">
           <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -396,7 +396,7 @@ export default function FeeDues() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-100">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-100">
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-yellow-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -416,7 +416,7 @@ export default function FeeDues() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-200">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-200">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-orange-500 to-orange-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -436,7 +436,7 @@ export default function FeeDues() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-right duration-500 delay-300">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-right duration-500 delay-300">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>

@@ -57,7 +57,7 @@ export default function StudentDashboard() {
 
       {/* Enhanced Fee Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-left duration-500">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-left duration-500">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -75,7 +75,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-100">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-100">
           <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -101,7 +101,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 group animate-in slide-in-from-right duration-500 delay-200">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-right duration-500 delay-200">
           <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
           <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
@@ -122,7 +122,7 @@ export default function StudentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Enhanced Pending Dues */}
-        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-left duration-700">
+        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-left duration-700">
           <CardHeader className="bg-gradient-to-r from-red-50 to-pink-50 border-b">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-lg animate-pulse">
@@ -137,7 +137,7 @@ export default function StudentDashboard() {
               {pendingDues.map((due, index) => (
                 <div
                   key={due.id}
-                  className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50/50 to-pink-50/50 hover:from-red-100 hover:to-pink-100 border-b border-red-200 last:border-b-0 transition-all duration-300 group animate-in slide-in-from-right duration-500"
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50/50 to-pink-50/50 hover:from-red-100 hover:to-pink-100 border-b border-red-200 last:border-b-0 transition-all group animate-in slide-in-from-right duration-500"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-center space-x-3">
@@ -168,7 +168,7 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Enhanced Recent Payments */}
-        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-right duration-700">
+        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-right duration-700">
           <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
@@ -183,7 +183,7 @@ export default function StudentDashboard() {
               {recentPayments.map((payment, index) => (
                 <div
                   key={payment.id}
-                  className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50/50 to-blue-50/50 hover:from-green-100 hover:to-blue-100 border-b border-green-200 last:border-b-0 transition-all duration-300 group animate-in slide-in-from-left duration-500"
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50/50 to-blue-50/50 hover:from-green-100 hover:to-blue-100 border-b border-green-200 last:border-b-0 transition-all group animate-in slide-in-from-left duration-500"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-center space-x-3">

@@ -130,7 +130,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Enhanced Recent Payments */}
-        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-left duration-700">
+        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-left duration-700">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
               {recentPayments.map((payment, index) => (
                 <div
                   key={payment.id}
-                  className="flex items-center justify-between p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 border-b border-gray-100 last:border-b-0 group animate-in slide-in-from-right duration-500"
+                  className="flex items-center justify-between p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all border-b border-gray-100 last:border-b-0 group animate-in slide-in-from-right duration-500"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-center space-x-3">
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Enhanced Quick Actions */}
-        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-in slide-in-from-right duration-700">
+        <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-right duration-700">
           <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                   <Button
                     key={index}
                     variant="outline"
-                    className={`h-24 flex flex-col bg-gradient-to-br ${action.bgColor} border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 group animate-in zoom-in duration-500`}
+                    className={`h-24 flex flex-col bg-gradient-to-br ${action.bgColor} border-0 shadow-md hover:shadow-xl transition-all hover:scale-105 group animate-in zoom-in duration-500`}
                     style={{ animationDelay: `${index * 150}ms` }}
                   >
                     <div
