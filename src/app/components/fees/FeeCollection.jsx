@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -51,9 +51,11 @@ export default function FeeCollection() {
   }, [])
 
   const [searchTerm, setSearchTerm] = useState("")
+  
+  // Fee Dialog State
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [paymentAmount, setPaymentAmount] = useState("")
-  const [paymentMode, setPaymentMode] = useState("")
+  const [paymentMode, setPaymentMode] = useState("cash")
   const [transactionId, setTransactionId] = useState("")
   const [remarks, setRemarks] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -94,10 +96,12 @@ export default function FeeCollection() {
     },
   ])
 
-  const filteredStudents = students.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.rollNo.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredStudents = useMemo(() => 
+    students.filter(
+      (student) =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.rollNo.toLowerCase().includes(searchTerm.toLowerCase()),
+    ), [students, searchTerm]
   )
 
   const getStatusBadge = (status) => {
@@ -112,8 +116,8 @@ export default function FeeCollection() {
 
   const handleCollectFee = (student) => {
     setSelectedStudent(student)
-    setPaymentAmount("")
-    setPaymentMode("")
+    setPaymentAmount(student.dueAmount.toString())
+    setPaymentMode("cash")
     setTransactionId("")
     setRemarks("")
     setIsDialogOpen(true)
@@ -122,10 +126,15 @@ export default function FeeCollection() {
   const handlePaymentSubmit = (e) => {
     e.preventDefault()
     
-    // Update student data with new payment
+    const payment = Number(paymentAmount)
+    if (!selectedStudent || payment <= 0 || payment > selectedStudent.dueAmount) {
+        console.error("Invalid payment attempt.")
+        return
+    }
+
     const updatedStudents = students.map(student => {
       if (student.id === selectedStudent.id) {
-        const newPaidAmount = student.paidAmount + Number(paymentAmount)
+        const newPaidAmount = student.paidAmount + payment
         const newDueAmount = student.totalFees - newPaidAmount
         const newStatus = newDueAmount === 0 ? "Paid" : newPaidAmount > 0 ? "Partial" : "Due"
         
@@ -142,19 +151,19 @@ export default function FeeCollection() {
 
     setStudents(updatedStudents)
     
-    // Log payment details
     console.log({
-      student: selectedStudent,
-      paymentAmount,
+      studentId: selectedStudent.id,
+      paymentAmount: payment,
       paymentMode,
       transactionId,
-      remarks
+      remarks,
+      timestamp: new Date().toISOString()
     })
 
-    // Close dialog and reset form
     setIsDialogOpen(false)
+    setSelectedStudent(null)
     setPaymentAmount("")
-    setPaymentMode("")
+    setPaymentMode("cash")
     setTransactionId("")
     setRemarks("")
   }
@@ -168,131 +177,35 @@ export default function FeeCollection() {
 
   // Generate PDF Receipt
   const generateReceipt = (student) => {
-    // Create a new window for PDF
     const receiptWindow = window.open('', '_blank')
-    
-    // Get current date
     const currentDate = new Date().toLocaleDateString('en-IN')
     const receiptNumber = `REC${Date.now()}`
     
-    // PDF content
     const pdfContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Fee Receipt - ${student.name}</title>
         <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          }
-          .receipt-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-          }
-          .header {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 30px;
-            text-align: center;
-          }
-          .school-name {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-          }
-          .receipt-title {
-            font-size: 20px;
-            opacity: 0.9;
-          }
-          .content {
-            padding: 30px;
-          }
-          .student-info {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #3b82f6;
-          }
-          .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-          }
-          .info-item {
-            margin-bottom: 10px;
-          }
-          .info-label {
-            font-weight: bold;
-            color: #64748b;
-            font-size: 14px;
-          }
-          .info-value {
-            color: #1e293b;
-            font-size: 16px;
-          }
-          .amount-section {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 25px 0;
-          }
-          .total-amount {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
-          }
-          .breakdown {
-            background: #f1f5f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-          }
-          .breakdown-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e2e8f0;
-          }
-          .breakdown-item:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            color: #3b82f6;
-          }
-          .footer {
-            text-align: center;
-            padding: 20px;
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
-            color: #64748b;
-            font-size: 12px;
-          }
-          .signature {
-            margin-top: 40px;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 20px;
-            text-align: right;
-          }
-          .watermark {
-            opacity: 0.1;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px;
-            font-weight: bold;
-            color: #64748b;
-          }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+          .receipt-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+          .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 30px; text-align: center; }
+          .school-name { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+          .receipt-title { font-size: 20px; opacity: 0.9; }
+          .content { padding: 30px; }
+          .student-info { background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #3b82f6; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+          .info-item { margin-bottom: 10px; }
+          .info-label { font-weight: bold; color: #64748b; font-size: 14px; }
+          .info-value { color: #1e293b; font-size: 16px; }
+          .amount-section { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 25px 0; }
+          .total-amount { font-size: 32px; font-weight: bold; margin: 10px 0; }
+          .breakdown { background: #f1f5f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+          .breakdown-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+          .breakdown-item:last-child { border-bottom: none; font-weight: bold; color: #3b82f6; }
+          .footer { text-align: center; padding: 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 12px; }
+          .signature { margin-top: 40px; border-top: 1px solid #cbd5e1; padding-top: 20px; text-align: right; }
+          .watermark { opacity: 0.1; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; font-weight: bold; color: #64748b; }
         </style>
       </head>
       <body>
@@ -383,19 +296,159 @@ export default function FeeCollection() {
       </html>
     `
 
-    // Write content to new window
     receiptWindow.document.write(pdfContent)
     receiptWindow.document.close()
     
-    // Print the receipt
     setTimeout(() => {
       receiptWindow.print()
     }, 500)
   }
 
+  // Fee Dialog Component
+  const FeeDialog = () => (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+            Collect Fee Payment
+          </DialogTitle>
+          <DialogDescription className="text-sm sm:text-base">
+            Record fee payment for <strong>{selectedStudent?.name}</strong> (Roll No: <strong>{selectedStudent?.rollNo}</strong>)
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handlePaymentSubmit} className="space-y-4 sm:space-y-6">
+          {/* Student Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm sm:text-base">Student Name</Label>
+              <Input value={selectedStudent?.name} disabled className="bg-gray-50 text-sm sm:text-base" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm sm:text-base">Due Amount</Label>
+              <Input
+                value={`₹${selectedStudent?.dueAmount.toLocaleString()}`}
+                disabled
+                className="bg-red-50 text-red-600 font-bold text-sm sm:text-base"
+              />
+            </div>
+          </div>
+
+          {/* Payment Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="paymentAmount" className="text-sm sm:text-base">Payment Amount (₹)</Label>
+              <Input
+                id="paymentAmount"
+                type="number"
+                placeholder="Enter amount"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                max={selectedStudent?.dueAmount}
+                className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+                required
+              />
+              {selectedStudent?.dueAmount > 0 && (
+                <p className="text-xs text-gray-500">
+                  Maximum: ₹{selectedStudent?.dueAmount.toLocaleString()}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="paymentMode" className="text-sm sm:text-base">Payment Mode</Label>
+              <Select value={paymentMode} onValueChange={setPaymentMode} required>
+                <SelectTrigger className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
+                  <SelectValue placeholder="Select payment mode" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="upi">UPI</SelectItem>
+                  <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="cheque">Cheque</SelectItem>
+                  <SelectItem value="card">Card</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Transaction Details */}
+          <div className="space-y-2">
+            <Label htmlFor="transactionId" className="text-sm sm:text-base">
+              Transaction ID / Reference {paymentMode !== 'cash' && <span className="text-red-500">*</span>}
+            </Label>
+            <Input
+              id="transactionId"
+              placeholder="Enter transaction ID or reference number"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+              required={paymentMode !== 'cash'}
+            />
+            {paymentMode !== 'cash' && (
+              <p className="text-xs text-red-500">Required for digital payments</p>
+            )}
+          </div>
+
+          {/* Payment Proof */}
+          <div className="space-y-2">
+            <Label htmlFor="paymentProof" className="text-sm sm:text-base">Payment Proof (Optional)</Label>
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+              <Input
+                id="paymentProof"
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleFileUpload}
+                className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent text-xs sm:text-sm"
+              >
+                <Upload className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Remarks */}
+          <div className="space-y-2">
+            <Label htmlFor="remarks" className="text-sm sm:text-base">Remarks</Label>
+            <Textarea
+              id="remarks"
+              placeholder="Add any additional notes..."
+              rows={3}
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setIsDialogOpen(false)}
+              className="w-full sm:w-auto order-2 sm:order-1 text-sm sm:text-base"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!selectedStudent || Number(paymentAmount) <= 0}
+              className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm sm:text-base order-1 sm:order-2"
+            >
+              Record Payment
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+
   if (!mounted) {
     return (
-      <div className="space-y-6 p-4 sm:p-0">
+      <div className="space-y-6 p-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-lg">
@@ -417,7 +470,11 @@ export default function FeeCollection() {
   }
 
   return (
-    <div className={`space-y-6 p-4 sm:p-0 transition-all duration-1000 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+    <div className={`space-y-6 p-4 transition-all duration-1000 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      
+      {/* Fee Dialog */}
+      <FeeDialog /> 
+      
       {/* Header */}
       <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <div className="flex items-center space-x-3 transform transition-all duration-500 hover:scale-105">
@@ -541,14 +598,14 @@ export default function FeeCollection() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <TableHead className="font-semibold">Roll No.</TableHead>
-                    <TableHead className="font-semibold">Name</TableHead>
-                    <TableHead className="font-semibold">Class</TableHead>
-                    <TableHead className="font-semibold">Total Fees</TableHead>
-                    <TableHead className="font-semibold">Paid Amount</TableHead>
-                    <TableHead className="font-semibold">Due Amount</TableHead>
-                    <TableHead className="font-semibold">Status</TableHead>
-                    <TableHead className="font-semibold">Actions</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Roll No.</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Name</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Class</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Total Fees</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Paid Amount</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Due Amount</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Status</TableHead>
+                    <TableHead className="font-semibold text-xs sm:text-sm">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -557,163 +614,39 @@ export default function FeeCollection() {
                       key={student.id}
                       className="hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 transition-all duration-300"
                     >
-                      <TableCell className="font-medium text-blue-600">{student.rollNo}</TableCell>
+                      <TableCell className="font-medium text-blue-600 text-xs sm:text-sm">{student.rollNo}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
                             {student.name.split(" ").map((n) => n[0]).join("")}
                           </div>
-                          <span className="font-medium">{student.name}</span>
+                          <span className="font-medium text-xs sm:text-sm">{student.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{student.class}</TableCell>
-                      <TableCell className="font-bold">₹{student.totalFees.toLocaleString()}</TableCell>
-                      <TableCell className="font-bold text-green-600">₹{student.paidAmount.toLocaleString()}</TableCell>
-                      <TableCell className="font-medium text-red-600">₹{student.dueAmount.toLocaleString()}</TableCell>
+                      <TableCell className="text-xs sm:text-sm">{student.class}</TableCell>
+                      <TableCell className="font-bold text-xs sm:text-sm">₹{student.totalFees.toLocaleString()}</TableCell>
+                      <TableCell className="font-bold text-green-600 text-xs sm:text-sm">₹{student.paidAmount.toLocaleString()}</TableCell>
+                      <TableCell className="font-medium text-red-600 text-xs sm:text-sm">₹{student.dueAmount.toLocaleString()}</TableCell>
                       <TableCell>{getStatusBadge(student.status)}</TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
                           {student.dueAmount > 0 && (
-                            <Dialog open={isDialogOpen && selectedStudent?.id === student.id} onOpenChange={setIsDialogOpen}>
-                              <DialogTrigger asChild>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleCollectFee(student)}
-                                  className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-xs"
-                                >
-                                  <CreditCard className="mr-2 h-4 w-4" />
-                                  Collect Fee
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
-                                <DialogHeader>
-                                  <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                                    Collect Fee Payment
-                                  </DialogTitle>
-                                  <DialogDescription>
-                                    Record fee payment for {selectedStudent?.name} (Roll No: {selectedStudent?.rollNo})
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={handlePaymentSubmit}>
-                                  <div className="space-y-4 sm:space-y-6 py-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                      <div className="space-y-2">
-                                        <Label className="text-sm sm:text-base">Student Name</Label>
-                                        <Input value={selectedStudent?.name} disabled className="bg-gray-50 text-sm sm:text-base" />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label className="text-sm sm:text-base">Due Amount</Label>
-                                        <Input
-                                          value={`₹${selectedStudent?.dueAmount.toLocaleString()}`}
-                                          disabled
-                                          className="bg-red-50 text-red-600 font-bold text-sm sm:text-base"
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                      <div className="space-y-2">
-                                        <Label htmlFor="paymentAmount" className="text-sm sm:text-base">Payment Amount (₹)</Label>
-                                        <Input
-                                          id="paymentAmount"
-                                          type="number"
-                                          placeholder="Enter amount"
-                                          value={paymentAmount}
-                                          onChange={(e) => setPaymentAmount(e.target.value)}
-                                          max={selectedStudent?.dueAmount}
-                                          className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                                          required
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Label htmlFor="paymentMode" className="text-sm sm:text-base">Payment Mode</Label>
-                                        <Select value={paymentMode} onValueChange={setPaymentMode} required>
-                                          <SelectTrigger className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
-                                            <SelectValue placeholder="Select payment mode" />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="cash">Cash</SelectItem>
-                                            <SelectItem value="upi">UPI</SelectItem>
-                                            <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
-                                            <SelectItem value="cheque">Cheque</SelectItem>
-                                            <SelectItem value="card">Card</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="transactionId" className="text-sm sm:text-base">Transaction ID / Reference</Label>
-                                      <Input
-                                        id="transactionId"
-                                        placeholder="Enter transaction ID or reference number"
-                                        value={transactionId}
-                                        onChange={(e) => setTransactionId(e.target.value)}
-                                        className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="paymentProof" className="text-sm sm:text-base">Payment Proof (Optional)</Label>
-                                      <div className="flex items-center space-x-2">
-                                        <Input
-                                          id="paymentProof"
-                                          type="file"
-                                          accept="image/*,application/pdf"
-                                          onChange={handleFileUpload}
-                                          className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                                        />
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="sm"
-                                          className="hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent"
-                                        >
-                                          <Upload className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="remarks" className="text-sm sm:text-base">Remarks</Label>
-                                      <Textarea
-                                        id="remarks"
-                                        placeholder="Add any additional notes..."
-                                        rows={3}
-                                        value={remarks}
-                                        onChange={(e) => setRemarks(e.target.value)}
-                                        className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                                      />
-                                    </div>
-                                  </div>
-                                  <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                                    <Button 
-                                      type="button" 
-                                      variant="outline" 
-                                      onClick={() => setIsDialogOpen(false)}
-                                      className="w-full sm:w-auto"
-                                    >
-                                      Cancel
-                                    </Button>
-                                    <Button
-                                      type="submit"
-                                      className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                                    >
-                                      Record Payment
-                                    </Button>
-                                  </DialogFooter>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
+                            <Button
+                              size="sm"
+                              onClick={() => handleCollectFee(student)}
+                              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
+                            >
+                              <CreditCard className="mr-2 h-4 w-4" />
+                              Collect Fee
+                            </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
                             onClick={() => generateReceipt(student)}
-                            className="hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 hover:scale-105 bg-transparent text-xs"
+                            className="text-xs hover:bg-gray-100 transition-all duration-300"
                           >
-                            <Download className="mr-2 h-4 w-4" />
-                            Receipt
+                             <Download className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -732,7 +665,7 @@ export default function FeeCollection() {
           animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
         }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
+          <div className="absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 transform translate-x-4 -translate-y-4 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
@@ -743,7 +676,7 @@ export default function FeeCollection() {
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-xl sm:text-3xl font-bold text-green-600 mb-1">₹45,000</div>
+            <div className="text-lg sm:text-3xl font-bold text-green-600 mb-1">₹45,000</div>
             <p className="text-xs text-gray-600">12 payments received</p>
           </CardContent>
         </Card>
@@ -752,7 +685,7 @@ export default function FeeCollection() {
           animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
         }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
+          <div className="absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 transform translate-x-4 -translate-y-4 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
@@ -763,7 +696,7 @@ export default function FeeCollection() {
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-xl sm:text-3xl font-bold text-red-600 mb-1">₹2,34,000</div>
+            <div className="text-lg sm:text-3xl font-bold text-red-600 mb-1">₹2,34,000</div>
             <p className="text-xs text-gray-600">From 156 students</p>
           </CardContent>
         </Card>
@@ -772,7 +705,7 @@ export default function FeeCollection() {
           animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
         }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
+          <div className="absolute top-0 right-0 w-20 h-20 sm:w-32 sm:h-32 transform translate-x-4 -translate-y-4 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
@@ -783,7 +716,7 @@ export default function FeeCollection() {
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-xl sm:text-3xl font-bold text-blue-600 mb-1">84.2%</div>
+            <div className="text-lg sm:text-3xl font-bold text-blue-600 mb-1">84.2%</div>
             <p className="text-xs text-gray-600">This month</p>
           </CardContent>
         </Card>

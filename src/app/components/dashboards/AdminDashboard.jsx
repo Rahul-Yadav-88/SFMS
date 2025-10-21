@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
-import { Users, DollarSign, AlertCircle, TrendingUp, Plus, FileText, CreditCard, Sparkles, ArrowUp } from "lucide-react"
+import { Users, DollarSign, AlertCircle, TrendingUp, Plus, FileText, CreditCard, Sparkles, ArrowUp, X } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,6 @@ export default function AdminDashboard() {
   const [statsVisible, setStatsVisible] = useState(false)
   const [contentVisible, setContentVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     // Check if mobile on mount and resize
@@ -157,148 +156,212 @@ export default function AdminDashboard() {
             <span>Manage your school's financial operations</span>
           </p>
         </div>
-        <div className="flex space-x-3 transform transition-all duration-1000 ease-out delay-300">
-          {/* Add Student Dialog */}
+        <div className="flex flex-col sm:flex-row gap-3 transform transition-all duration-1000 ease-out delay-300">
+          {/* Add Student Dialog - UPDATED FOR RESPONSIVENESS */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-pulse-slow">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-pulse-slow w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Student
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Add New Student
-                </DialogTitle>
-                <DialogDescription>Enter student details to add them to the system.</DialogDescription>
-              </DialogHeader>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  const formData = new FormData(e.target)
-                  const newStudent = {
-                    rollNo: formData.get("rollNo"),
-                    name: formData.get("name"),
-                    class: formData.get("class"),
-                    section: formData.get("section"),
-                    email: formData.get("email"),
-                    mobile: formData.get("mobile"),
-                    parentName: formData.get("parentName"),
-                    address: formData.get("address"),
-                    feeStatus: "Due",
-                    dueAmount: 15000,
-                  }
-                  handleAddStudent(newStudent)
-                  e.target.reset()
-                }}
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="Enter full name"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rollNo">Roll Number</Label>
-                    <Input
-                      id="rollNo"
-                      name="rollNo"
-                      placeholder="Enter roll number"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="class">Class</Label>
-                    <Select name="class" required>
-                      <SelectTrigger className="border-2 focus:border-blue-400 transition-all duration-300">
-                        <SelectValue placeholder="Select class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="8-A">8-A</SelectItem>
-                        <SelectItem value="9-A">9-A</SelectItem>
-                        <SelectItem value="9-B">9-B</SelectItem>
-                        <SelectItem value="10-A">10-A</SelectItem>
-                        <SelectItem value="10-B">10-B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="section">Section</Label>
-                    <Select name="section" required>
-                      <SelectTrigger className="border-2 focus:border-blue-400 transition-all duration-300">
-                        <SelectValue placeholder="Select section" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Science">Science</SelectItem>
-                        <SelectItem value="Commerce">Commerce</SelectItem>
-                        <SelectItem value="Arts">Arts</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Enter email"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="mobile">Mobile</Label>
-                    <Input
-                      id="mobile"
-                      name="mobile"
-                      placeholder="Enter mobile number"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="parentName">Parent Name</Label>
-                    <Input
-                      id="parentName"
-                      name="parentName"
-                      placeholder="Enter parent name"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2 col-span-1 sm:col-span-2">
-                    <Label htmlFor="address">Address</Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      placeholder="Enter address"
-                      className="border-2 focus:border-blue-400 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="submit"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                  >
-                    Add Student
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
+            <DialogContent className="
+  w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto 
+  bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl
+  sm:rounded-lg
+">
+  <DialogHeader className="pb-4 sm:pb-6">
+    <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center sm:text-left">
+      Add New Student
+    </DialogTitle>
+    <DialogDescription className="text-center sm:text-left">
+      Enter student details to add them to the system.
+    </DialogDescription>
+  </DialogHeader>
+  
+  <form
+    onSubmit={(e) => {
+      e.preventDefault()
+      const formData = new FormData(e.target)
+      const newStudent = {
+        rollNo: formData.get("rollNo"),
+        name: formData.get("name"),
+        class: formData.get("class"),
+        section: formData.get("section"),
+        email: formData.get("email"),
+        mobile: formData.get("mobile"),
+        parentName: formData.get("parentName"),
+        address: formData.get("address"),
+        feeStatus: "Due",
+        dueAmount: 15000,
+      }
+      handleAddStudent(newStudent)
+      e.target.reset()
+    }}
+    className="space-y-4 sm:space-y-6"
+  >
+    {/* Student Information Section */}
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Student Information</h3>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium">
+            Full Name *
+          </Label>
+          <Input
+            id="name"
+            name="name"
+            placeholder="Enter full name"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="rollNo" className="text-sm font-medium">
+            Roll Number *
+          </Label>
+          <Input
+            id="rollNo"
+            name="rollNo"
+            placeholder="Enter roll number"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="class" className="text-sm font-medium">
+            Class *
+          </Label>
+          <Select name="class" required>
+            <SelectTrigger className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base">
+              <SelectValue placeholder="Select class" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectItem value="8-A">8-A</SelectItem>
+              <SelectItem value="9-A">9-A</SelectItem>
+              <SelectItem value="9-B">9-B</SelectItem>
+              <SelectItem value="10-A">10-A</SelectItem>
+              <SelectItem value="10-B">10-B</SelectItem>
+              <SelectItem value="11-A">11-A</SelectItem>
+              <SelectItem value="11-B">11-B</SelectItem>
+              <SelectItem value="12-A">12-A</SelectItem>
+              <SelectItem value="12-B">12-B</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="section" className="text-sm font-medium">
+            Section *
+          </Label>
+          <Select name="section" required>
+            <SelectTrigger className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base">
+              <SelectValue placeholder="Select section" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectItem value="Science">Science</SelectItem>
+              <SelectItem value="Commerce">Commerce</SelectItem>
+              <SelectItem value="Arts">Arts</SelectItem>
+              <SelectItem value="General">General</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
+
+    {/* Contact Information Section */}
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Contact Information</h3>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-sm font-medium">
+            Email Address *
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="student@email.com"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="mobile" className="text-sm font-medium">
+            Mobile Number *
+          </Label>
+          <Input
+            id="mobile"
+            name="mobile"
+            placeholder="+91 9876543210"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Parent Information Section */}
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Parent Information</h3>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor="parentName" className="text-sm font-medium">
+            Parent/Guardian Name *
+          </Label>
+          <Input
+            id="parentName"
+            name="parentName"
+            placeholder="Enter parent/guardian name"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+        
+        <div className="space-y-2 sm:col-span-2">
+          <Label htmlFor="address" className="text-sm font-medium">
+            Address *
+          </Label>
+          <Input
+            id="address"
+            name="address"
+            placeholder="Enter complete address"
+            className="w-full border-2 focus:border-blue-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+      </div>
+    </div>
+
+    <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t">
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full sm:w-auto order-2 sm:order-1"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 order-1 sm:order-2"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        Add Student
+      </Button>
+    </DialogFooter>
+  </form>
+</DialogContent>
           </Dialog>
 
           <Button
             variant="outline"
-            className="border-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300 transition-all duration-300 hover:scale-105 bg-transparent"
+            className="border-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300 transition-all duration-300 hover:scale-105 bg-transparent w-full sm:w-auto"
           >
             <FileText className="mr-2 h-4 w-4" />
             Create Fee Structure
@@ -338,7 +401,7 @@ export default function AdminDashboard() {
                 ></div>
               </div>
 
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-4">
                 <CardTitle className="text-sm font-medium text-gray-700">{stat.title}</CardTitle>
                 <div
                   className={`p-2 rounded-lg bg-gradient-to-r ${stat.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}
@@ -346,7 +409,7 @@ export default function AdminDashboard() {
                   <Icon className="h-4 w-4 text-white" />
                 </div>
               </CardHeader>
-              <CardContent className="relative">
+              <CardContent className="relative p-4 pt-0">
                 <div className="text-xl font-bold text-gray-800 mb-1">{stat.value}</div>
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-600">{stat.description}</p>
@@ -375,12 +438,12 @@ export default function AdminDashboard() {
       `}>
         {/* Enhanced Recent Payments */}
         <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b p-4 sm:p-6">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
                 <CreditCard className="h-4 w-4 text-white" />
               </div>
-              <span>Recent Payments</span>
+              <span className="text-lg sm:text-xl">Recent Payments</span>
             </CardTitle>
             <CardDescription>Latest fee payments received</CardDescription>
           </CardHeader>
@@ -399,14 +462,14 @@ export default function AdminDashboard() {
                         .map((n) => n[0])
                         .join("")}
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-800">{payment.student}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-800 truncate">{payment.student}</p>
                       <p className="text-sm text-gray-500">Class {payment.class}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-600">{payment.amount}</p>
-                    <p className="text-sm text-gray-500">{payment.date}</p>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <p className="font-bold text-green-600 text-sm sm:text-base">{payment.amount}</p>
+                    <p className="text-xs text-gray-500">{payment.date}</p>
                   </div>
                 </div>
               ))}
@@ -416,16 +479,16 @@ export default function AdminDashboard() {
 
         {/* Enhanced Quick Actions */}
         <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b p-4 sm:p-6">
             <CardTitle className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
-              <span>Quick Actions</span>
+              <span className="text-lg sm:text-xl">Quick Actions</span>
             </CardTitle>
             <CardDescription>Frequently used actions</CardDescription>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {[
                 {
@@ -459,16 +522,16 @@ export default function AdminDashboard() {
                     key={index}
                     variant="outline"
                     className={`
-                      h-20 sm:h-24 flex flex-col bg-gradient-to-br ${action.bgColor} border-0 shadow-md hover:shadow-xl transition-all hover:scale-105 group
+                      h-16 sm:h-20 flex flex-col bg-gradient-to-br ${action.bgColor} border-0 shadow-md hover:shadow-xl transition-all hover:scale-105 group
                     `}
                     style={{ transitionDelay: `${index * 150}ms` }}
                   >
                     <div
-                      className={`p-3 rounded-xl bg-gradient-to-r ${action.color} mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                      className={`p-2 sm:p-3 rounded-xl bg-gradient-to-r ${action.color} mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                     >
-                      <Icon className="h-6 w-6 text-white" />
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{action.label}</span>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 text-center px-1">{action.label}</span>
                   </Button>
                 )
               })}

@@ -400,69 +400,93 @@ const PaymentHistory = () => {
 
       {/* Receipt Dialog */}
       <Dialog open={receiptDialogOpen} onOpenChange={setReceiptDialogOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-md bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Payment Receipt
-            </DialogTitle>
-          </DialogHeader>
-          {selectedPayment && (
-            <div className="space-y-4 py-4">
-              <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
-                  {selectedPayment.studentName.split(" ").map((n) => n[0]).join("")}
-                </div>
-                <h3 className="font-bold text-lg">{selectedPayment.studentName}</h3>
-                <p className="text-sm text-gray-600">Transaction: {selectedPayment.transactionId}</p>
-                <p className="text-sm text-gray-600">Class: {selectedPayment.class}</p>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                  <span className="text-sm font-medium">Amount:</span>
-                  <span className="font-semibold text-green-600 text-lg">₹{selectedPayment.amount.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Payment Mode:</span>
-                  <span className="font-semibold">{selectedPayment.paymentMode}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Date:</span>
-                  <span className="font-semibold">{selectedPayment.paymentDate}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Status:</span>
-                  <span
-                    className={`font-semibold ${selectedPayment.status === "Verified" ? "text-green-600" : selectedPayment.status === "Pending" ? "text-yellow-600" : "text-red-600"}`}
-                  >
-                    {selectedPayment.status}
-                  </span>
-                </div>
-                {selectedPayment.verifiedBy && (
-                  <div className="flex justify-between text-sm border-t pt-2">
-                    <span>Verified By:</span>
-                    <span className="font-semibold">{selectedPayment.verifiedBy}</span>
-                  </div>
-                )}
-              </div>
+  <DialogContent className="
+    w-[95vw] max-w-md max-h-[90vh] overflow-y-auto 
+    bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl
+    sm:rounded-lg
+  ">
+    <DialogHeader className="pb-4 sm:pb-6">
+      <DialogTitle className="text-lg sm:text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center sm:text-left">
+        Payment Receipt
+      </DialogTitle>
+    </DialogHeader>
+    
+    {selectedPayment && (
+      <div className="space-y-4 sm:space-y-6 py-4">
+        <div className="text-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+            {selectedPayment.studentName.split(" ").map((n) => n[0]).join("")}
+          </div>
+          <h3 className="font-bold text-lg sm:text-xl">{selectedPayment.studentName}</h3>
+          <p className="text-sm text-gray-600">Transaction: {selectedPayment.transactionId}</p>
+          <p className="text-sm text-gray-600">Class: {selectedPayment.class}</p>
+        </div>
+        
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex justify-between items-center p-3 sm:p-4 bg-gray-50 rounded-lg">
+            <span className="text-sm sm:text-base font-medium">Amount:</span>
+            <span className="font-semibold text-green-600 text-lg sm:text-xl">₹{selectedPayment.amount.toLocaleString()}</span>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Payment Mode:</span>
+              <span className="font-semibold">{selectedPayment.paymentMode}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Date:</span>
+              <span className="font-semibold">{selectedPayment.paymentDate}</span>
+            </div>
+          </div>
+          
+          <div className="flex justify-between text-sm sm:text-base">
+            <span className="text-gray-600">Status:</span>
+            <span
+              className={`font-semibold ${
+                selectedPayment.status === "Verified" 
+                  ? "text-green-600" 
+                  : selectedPayment.status === "Pending" 
+                    ? "text-yellow-600" 
+                    : "text-red-600"
+              }`}
+            >
+              {selectedPayment.status}
+            </span>
+          </div>
+          
+          {selectedPayment.verifiedBy && (
+            <div className="flex justify-between text-sm sm:text-base border-t pt-3">
+              <span className="text-gray-600">Verified By:</span>
+              <span className="font-semibold">{selectedPayment.verifiedBy}</span>
             </div>
           )}
-          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setReceiptDialogOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Close
-            </Button>
-            <Button
-              onClick={() => setReceiptDialogOpen(false)}
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              Download PDF
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
+    )}
+    
+    <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t">
+      <Button 
+        type="button"
+        variant="outline" 
+        onClick={() => setReceiptDialogOpen(false)}
+        className="w-full sm:w-auto order-2 sm:order-1"
+      >
+        Close
+      </Button>
+      <Button
+        onClick={() => {
+          // Simulate PDF download
+          console.log(`Downloading receipt for ${selectedPayment?.transactionId}`)
+          setReceiptDialogOpen(false)
+        }}
+        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 order-1 sm:order-2"
+      >
+        <Download className="mr-2 h-4 w-4" />
+        Download PDF
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </div>
   )
 }

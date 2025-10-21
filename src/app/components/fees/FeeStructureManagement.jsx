@@ -198,134 +198,193 @@ export default function FeeStructureManagement() {
         </div>
         <div className="transform transition-all duration-1000 ease-out">
           <Dialog>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm sm:text-base">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Fee Structure
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                  Create New Fee Structure
-                </DialogTitle>
-                <DialogDescription>Define fee structure for a class with multiple fee heads.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 sm:space-y-6 py-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="structureName" className="text-sm sm:text-base">Structure Name</Label>
-                    <Input
-                      id="structureName"
-                      placeholder="e.g., Class 10 - Science Stream"
-                      className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="class" className="text-sm sm:text-base">Class</Label>
-                    <Select>
-                      <SelectTrigger className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
-                        <SelectValue placeholder="Select class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="8-A">8-A</SelectItem>
-                        <SelectItem value="9-A">9-A</SelectItem>
-                        <SelectItem value="9-B">9-B</SelectItem>
-                        <SelectItem value="10-A">10-A</SelectItem>
-                        <SelectItem value="10-B">10-B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+  <DialogTrigger asChild>
+    <Button className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm sm:text-base">
+      <Plus className="mr-2 h-4 w-4" />
+      Create Fee Structure
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="
+    w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto 
+    bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl
+    sm:rounded-lg
+  ">
+    <DialogHeader className="pb-4 sm:pb-6">
+      <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent text-center sm:text-left">
+        Create New Fee Structure
+      </DialogTitle>
+      <DialogDescription className="text-center sm:text-left">
+        Define fee structure for a class with multiple fee heads.
+      </DialogDescription>
+    </DialogHeader>
+    
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        const totalAmount = feeHeads.reduce((sum, head) => sum + (Number.parseInt(head.amount) || 0), 0)
+        
+        const newStructure = {
+          id: Date.now(),
+          name: formData.get("structureName"),
+          class: formData.get("class"),
+          term: formData.get("term"),
+          totalAmount: totalAmount,
+          feeHeads: feeHeads.map(head => ({
+            name: head.name,
+            amount: Number.parseInt(head.amount) || 0
+          })),
+          studentsAssigned: 0,
+          status: "Active",
+        }
+        setFeeStructures([...feeStructures, newStructure])
+        e.target.reset()
+        // Reset fee heads to default
+        setFeeHeads([{ name: "Tuition Fee", amount: "" }, { name: "Transport Fee", amount: "" }])
+      }}
+      className="space-y-4 sm:space-y-6"
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="structureName" className="text-sm font-medium">
+            Structure Name *
+          </Label>
+          <Input
+            id="structureName"
+            name="structureName"
+            placeholder="e.g., Class 10 - Science Stream"
+            className="w-full border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="class" className="text-sm font-medium">
+            Class *
+          </Label>
+          <Select name="class" required>
+            <SelectTrigger className="w-full border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
+              <SelectValue placeholder="Select class" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectItem value="8-A">8-A</SelectItem>
+              <SelectItem value="9-A">9-A</SelectItem>
+              <SelectItem value="9-B">9-B</SelectItem>
+              <SelectItem value="10-A">10-A</SelectItem>
+              <SelectItem value="10-B">10-B</SelectItem>
+              <SelectItem value="11-A">11-A</SelectItem>
+              <SelectItem value="11-B">11-B</SelectItem>
+              <SelectItem value="12-A">12-A</SelectItem>
+              <SelectItem value="12-B">12-B</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm sm:text-base">Term</Label>
-                  <Select>
-                    <SelectTrigger className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
-                      <SelectValue placeholder="Select term" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Monthly">Monthly</SelectItem>
-                      <SelectItem value="Quarterly">Quarterly</SelectItem>
-                      <SelectItem value="Yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+      <div className="space-y-2">
+        <Label htmlFor="term" className="text-sm font-medium">
+          Term *
+        </Label>
+        <Select name="term" required>
+          <SelectTrigger className="w-full border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base">
+            <SelectValue placeholder="Select term" />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            <SelectItem value="Monthly">Monthly</SelectItem>
+            <SelectItem value="Quarterly">Quarterly</SelectItem>
+            <SelectItem value="Yearly">Yearly</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                    <Label className="text-sm sm:text-base">Fee Heads</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addFeeHead}
-                      className="hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent text-xs sm:text-sm"
-                    >
-                      <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                      Add Fee Head
-                    </Button>
-                  </div>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <Label className="text-sm font-medium">Fee Heads *</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addFeeHead}
+            className="hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent text-xs sm:text-sm w-full sm:w-auto"
+          >
+            <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            Add Fee Head
+          </Button>
+        </div>
 
-                  <div className="space-y-3">
-                    {feeHeads.map((head, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0 items-end"
-                      >
-                        <div className="flex-1 w-full">
-                          <Label className="text-xs sm:text-sm">Fee Head Name</Label>
-                          <Input
-                            placeholder="e.g., Tuition Fee"
-                            value={head.name}
-                            onChange={(e) => updateFeeHead(index, "name", e.target.value)}
-                            className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                          />
-                        </div>
-                        <div className="flex-1 w-full">
-                          <Label className="text-xs sm:text-sm">Amount (₹)</Label>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            value={head.amount}
-                            onChange={(e) => updateFeeHead(index, "amount", e.target.value)}
-                            className="border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeFeeHead(index)}
-                          disabled={feeHeads.length === 1}
-                          className="hover:bg-red-50 hover:border-red-300 transition-all duration-300 hover:scale-105 w-full sm:w-auto"
-                        >
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="p-3 sm:p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-700 text-sm sm:text-base">Total Amount:</span>
-                      <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                        ₹{feeHeads.reduce((sum, head) => sum + (Number.parseInt(head.amount) || 0), 0).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+        <div className="space-y-3">
+          {feeHeads.map((head, index) => (
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-end"
+            >
+              <div className="flex-1 w-full">
+                <Label className="text-xs sm:text-sm">Fee Head Name *</Label>
+                <Input
+                  placeholder="e.g., Tuition Fee"
+                  value={head.name}
+                  onChange={(e) => updateFeeHead(index, "name", e.target.value)}
+                  className="w-full border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+                  required
+                />
               </div>
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  Create Fee Structure
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              <div className="flex-1 w-full">
+                <Label className="text-xs sm:text-sm">Amount (₹) *</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={head.amount}
+                  onChange={(e) => updateFeeHead(index, "amount", e.target.value)}
+                  className="w-full border-2 focus:border-green-400 transition-all duration-300 text-sm sm:text-base"
+                  required
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => removeFeeHead(index)}
+                disabled={feeHeads.length === 1}
+                className="hover:bg-red-50 hover:border-red-300 transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+              >
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-3 sm:p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+          <div className="flex justify-between items-center">
+            <span className="font-medium text-gray-700 text-sm sm:text-base">Total Amount:</span>
+            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              ₹{feeHeads.reduce((sum, head) => sum + (Number.parseInt(head.amount) || 0), 0).toLocaleString()}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            // Reset form when canceling
+            setFeeHeads([{ name: "Tuition Fee", amount: "" }, { name: "Transport Fee", amount: "" }])
+          }}
+          className="w-full sm:w-auto order-2 sm:order-1"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 order-1 sm:order-2"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Create Fee Structure
+        </Button>
+      </DialogFooter>
+    </form>
+  </DialogContent>
+</Dialog>
         </div>
       </div>
 

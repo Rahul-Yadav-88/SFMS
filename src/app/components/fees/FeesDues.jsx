@@ -611,92 +611,117 @@ export default function FeeDues() {
 
       {/* Send Reminder Dialog */}
       <Dialog open={reminderDialogOpen} onOpenChange={setReminderDialogOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-              Send Fee Reminder
-            </DialogTitle>
-            <DialogDescription>
-              Send reminder to {selectedStudent?.parentName} ({selectedStudent?.parentMobile})
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 sm:space-y-6 py-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">Student Name</Label>
-                <Input value={selectedStudent?.name || ""} disabled className="bg-gray-50 text-sm sm:text-base" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">Due Amount</Label>
-                <Input
-                  value={selectedStudent ? `₹${selectedStudent.totalDue.toLocaleString()}` : ""}
-                  disabled
-                  className="bg-red-50 text-red-600 font-bold text-sm sm:text-base"
-                />
-              </div>
-            </div>
+  <DialogContent className="
+    w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto 
+    bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl
+    sm:rounded-lg
+  ">
+    <DialogHeader className="pb-4 sm:pb-6">
+      <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent text-center sm:text-left">
+        Send Fee Reminder
+      </DialogTitle>
+      <DialogDescription className="text-center sm:text-left">
+        Send reminder to {selectedStudent?.parentName} ({selectedStudent?.parentMobile})
+      </DialogDescription>
+    </DialogHeader>
+    
+    <div className="space-y-4 sm:space-y-6 py-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Student Name</Label>
+          <Input 
+            value={selectedStudent?.name || ""} 
+            disabled 
+            className="w-full bg-gray-50 text-sm sm:text-base" 
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Due Amount</Label>
+          <Input
+            value={selectedStudent ? `₹${selectedStudent.totalDue.toLocaleString()}` : ""}
+            disabled
+            className="w-full bg-red-50 text-red-600 font-bold text-sm sm:text-base"
+          />
+        </div>
+      </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">Parent Name</Label>
-                <Input value={selectedStudent?.parentName || ""} disabled className="bg-gray-50 text-sm sm:text-base" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">Contact Method</Label>
-                <Select defaultValue="sms">
-                  <SelectTrigger className="border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sms">SMS</SelectItem>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="both">SMS & Email</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Parent Name</Label>
+          <Input 
+            value={selectedStudent?.parentName || ""} 
+            disabled 
+            className="w-full bg-gray-50 text-sm sm:text-base" 
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="contactMethod" className="text-sm font-medium">Contact Method</Label>
+          <Select name="contactMethod" defaultValue="sms">
+            <SelectTrigger className="w-full border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base">
+              <SelectValue placeholder="Select contact method" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectItem value="sms">SMS</SelectItem>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="both">SMS & Email</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="reminderMessage" className="text-sm sm:text-base">Message</Label>
-              <Textarea
-                id="reminderMessage"
-                value={reminderMessage}
-                onChange={(e) => setReminderMessage(e.target.value)}
-                rows={4}
-                className="border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base"
-              />
-            </div>
+      <div className="space-y-2">
+        <Label htmlFor="reminderMessage" className="text-sm font-medium">Message *</Label>
+        <Textarea
+          id="reminderMessage"
+          value={reminderMessage}
+          onChange={(e) => setReminderMessage(e.target.value)}
+          rows={4}
+          className="w-full border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base"
+          placeholder="Enter your reminder message here..."
+          required
+        />
+        <p className="text-xs text-gray-500">
+          Character count: {reminderMessage.length} {reminderMessage.length > 160 ? '(SMS may be split)' : ''}
+        </p>
+      </div>
 
-            <div className="p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200">
-              <div className="flex items-center space-x-2 mb-2">
-                <AlertCircle className="h-4 w-4 text-red-500" />
-                <span className="font-medium text-red-700 text-sm sm:text-base">Reminder Details</span>
-              </div>
-              <div className="text-xs sm:text-sm text-gray-600 space-y-1">
-                <p>• Overdue: {selectedStudent?.overdueDays} days</p>
-                <p>• Priority: {selectedStudent?.priority}</p>
-                <p>• Last Payment: {selectedStudent?.lastPayment || "Never"}</p>
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setReminderDialogOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={sendReminder}
-              className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Send Reminder
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <div className="p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200">
+        <div className="flex items-center space-x-2 mb-2">
+          <AlertCircle className="h-4 w-4 text-red-500" />
+          <span className="font-medium text-red-700 text-sm sm:text-base">Reminder Details</span>
+        </div>
+        <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+          <p>• Overdue: {selectedStudent?.overdueDays} days</p>
+          <p>• Priority: {selectedStudent?.priority}</p>
+          <p>• Last Payment: {selectedStudent?.lastPayment || "Never"}</p>
+          <p>• Total Due: ₹{selectedStudent?.totalDue.toLocaleString()}</p>
+        </div>
+      </div>
+    </div>
+    
+    <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t">
+      <Button 
+        type="button"
+        variant="outline" 
+        onClick={() => {
+          setReminderDialogOpen(false)
+          setReminderMessage("")
+        }}
+        className="w-full sm:w-auto order-2 sm:order-1"
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={sendReminder}
+        disabled={!reminderMessage.trim()}
+        className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 order-1 sm:order-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <Send className="mr-2 h-4 w-4" />
+        Send Reminder
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       {/* Student Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
