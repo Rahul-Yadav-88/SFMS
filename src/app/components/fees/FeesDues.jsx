@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -17,9 +17,38 @@ import {
 import { Label } from "../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Textarea } from "../ui/textarea"
-import { AlertCircle, Send, Download, Search, Filter, Sparkles, Eye, Phone, Mail } from "lucide-react"
+import { AlertCircle, Send, Download, Search, Filter, Sparkles, Eye, Phone, Mail, MoreVertical } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
 
 export default function FeeDues() {
+  const [mounted, setMounted] = useState(false)
+  const [animate, setAnimate] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    setMounted(true)
+    // Trigger animations after mount
+    const timer = setTimeout(() => {
+      setAnimate(true)
+    }, 100)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', checkMobile)
+    }
+  }, [])
+
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClass, setSelectedClass] = useState("all")
   const [selectedPriority, setSelectedPriority] = useState("all")
@@ -174,36 +203,61 @@ export default function FeeDues() {
   }
 
   const getPriorityBadge = (priority) => {
+    const baseClasses = "text-xs font-medium"
     if (priority === "High") {
-      return <Badge className="bg-red-100 text-red-800 border-red-200 animate-pulse">High</Badge>
+      return <Badge className={`bg-red-100 text-red-800 border-red-200 ${baseClasses}`}>High</Badge>
     } else if (priority === "Medium") {
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 animate-pulse">Medium</Badge>
+      return <Badge className={`bg-yellow-100 text-yellow-800 border-yellow-200 ${baseClasses}`}>Medium</Badge>
     } else {
-      return <Badge className="bg-green-100 text-green-800 border-green-200 animate-pulse">Low</Badge>
+      return <Badge className={`bg-green-100 text-green-800 border-green-200 ${baseClasses}`}>Low</Badge>
     }
   }
 
+  if (!mounted) {
+    return (
+      <div className="space-y-8 p-4 sm:p-0">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="p-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl shadow-lg">
+              <AlertCircle className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                Fee Dues Management
+              </h2>
+              <p className="text-gray-600 flex items-center space-x-1">
+                <Sparkles className="h-4 w-4 text-red-500" />
+                <span>Track and manage outstanding fee payments</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center animate-in slide-in-from-top duration-500">
-        <div className="flex items-center space-x-3">
-          <div className="p-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl shadow-lg">
-            <AlertCircle className="h-6 w-6 text-white" />
+    <div className={`space-y-6 p-4 sm:p-0 transition-all duration-1000 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      {/* Header */}
+      <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <div className="flex items-center space-x-3 transform transition-all duration-500 hover:scale-105">
+          <div className="p-2 sm:p-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl shadow-lg">
+            <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            <h2 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
               Fee Dues Management
             </h2>
-            <p className="text-gray-600 flex items-center space-x-1">
-              <Sparkles className="h-4 w-4 text-red-500 animate-pulse" />
+            <p className="text-gray-600 flex items-center space-x-1 text-sm sm:text-base">
+              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
               <span>Track and manage outstanding fee payments</span>
             </p>
           </div>
         </div>
-        <div className="flex space-x-3">
+        <div className={`flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <Button
             onClick={sendBulkReminders}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 animate-in slide-in-from-right duration-500"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105 text-sm sm:text-base"
           >
             <Send className="mr-2 h-4 w-4" />
             Send Bulk Reminders
@@ -211,7 +265,7 @@ export default function FeeDues() {
           <Button
             variant="outline"
             onClick={exportReport}
-            className="border-2 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent"
+            className="w-full sm:w-auto border-2 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 hover:border-green-300 transition-all duration-300 hover:scale-105 bg-transparent text-sm sm:text-base"
           >
             <Download className="mr-2 h-4 w-4" />
             Export Report
@@ -220,17 +274,19 @@ export default function FeeDues() {
       </div>
 
       {/* Enhanced Filters */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-left duration-500">
+      <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 ${
+        animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
         <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50 border-b">
           <CardTitle className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg">
               <Filter className="h-4 w-4 text-white" />
             </div>
-            <span>Filters</span>
+            <span className="text-sm sm:text-base">Filters</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex space-x-4">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -238,12 +294,12 @@ export default function FeeDues() {
                   placeholder="Search by name, roll number, or class..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="pl-10 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md text-sm sm:text-base"
                 />
               </div>
             </div>
             <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger className="w-48 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md">
+              <SelectTrigger className="w-full sm:w-48 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md text-sm sm:text-base">
                 <SelectValue placeholder="Filter by class" />
               </SelectTrigger>
               <SelectContent className="bg-white/95 backdrop-blur-xl border border-white/20 shadow-xl">
@@ -257,7 +313,7 @@ export default function FeeDues() {
               </SelectContent>
             </Select>
             <Select value={selectedPriority} onValueChange={setSelectedPriority}>
-              <SelectTrigger className="w-48 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md">
+              <SelectTrigger className="w-full sm:w-48 border-2 focus:border-red-400 transition-all duration-300 shadow-sm hover:shadow-md text-sm sm:text-base">
                 <SelectValue placeholder="Filter by priority" />
               </SelectTrigger>
               <SelectContent className="bg-white/95 backdrop-blur-xl border border-white/20 shadow-xl">
@@ -272,16 +328,18 @@ export default function FeeDues() {
       </Card>
 
       {/* Enhanced Students with Dues Table */}
-      <Card className="border-0 shadow-xl hover:shadow-2xl transition-all animate-in slide-in-from-bottom duration-700">
+      <Card className={`border-0 shadow-xl hover:shadow-2xl transition-all duration-500 ${
+        animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
         <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50 border-b">
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div className="flex items-center space-x-2">
               <div className="p-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg">
                 <AlertCircle className="h-4 w-4 text-white" />
               </div>
-              <span>Students with Outstanding Dues ({filteredStudents.length})</span>
+              <span className="text-sm sm:text-base">Students with Outstanding Dues ({filteredStudents.length})</span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs sm:text-sm text-gray-500">
               Total Outstanding: ₹{filteredStudents.reduce((sum, s) => sum + s.totalDue, 0).toLocaleString()}
             </div>
           </CardTitle>
@@ -289,167 +347,256 @@ export default function FeeDues() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <TableHead className="font-semibold">Roll No.</TableHead>
-                  <TableHead className="font-semibold">Name</TableHead>
-                  <TableHead className="font-semibold">Class</TableHead>
-                  <TableHead className="font-semibold">Due Amount</TableHead>
-                  <TableHead className="font-semibold">Overdue Days</TableHead>
-                  <TableHead className="font-semibold">Priority</TableHead>
-                  <TableHead className="font-semibold">Parent Contact</TableHead>
-                  <TableHead className="font-semibold">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            {isMobile ? (
+              // Mobile Cards View
+              <div className="space-y-4 p-4">
                 {filteredStudents.map((student, index) => (
-                  <TableRow
-                    key={student.id}
-                    className="hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all animate-in slide-in-from-left duration-500"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <TableCell className="font-medium text-blue-600">{student.rollNo}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                          {student.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+                  <Card key={student.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            {student.name.split(" ").map((n) => n[0]).join("")}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800 text-sm">{student.name}</p>
+                            <p className="text-xs text-gray-500">Roll No: {student.rollNo} • Class: {student.class}</p>
+                          </div>
                         </div>
-                        <span className="font-medium">{student.name}</span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleViewDetails(student)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleSendReminder(student)}>
+                              <Send className="h-4 w-4 mr-2" />
+                              Send Reminder
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                    </TableCell>
-                    <TableCell>{student.class}</TableCell>
-                    <TableCell className="font-bold text-red-600">₹{student.totalDue.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`font-medium ${
-                          student.overdueDays > 20
-                            ? "text-red-600"
-                            : student.overdueDays > 10
-                              ? "text-yellow-600"
-                              : "text-green-600"
-                        }`}
-                      >
-                        {student.overdueDays} days
-                      </span>
-                    </TableCell>
-                    <TableCell>{getPriorityBadge(student.priority)}</TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center space-x-1 text-sm">
-                          <Phone className="h-3 w-3 text-gray-400" />
-                          <span>{student.parentMobile}</span>
+                      
+                      <div className="grid grid-cols-2 gap-3 text-xs mb-3">
+                        <div>
+                          <p className="text-gray-500">Due Amount</p>
+                          <p className="font-bold text-red-600 text-sm">₹{student.totalDue.toLocaleString()}</p>
                         </div>
-                        <div className="text-xs text-gray-500">{student.parentName}</div>
+                        <div>
+                          <p className="text-gray-500">Overdue Days</p>
+                          <p className={`font-medium ${
+                            student.overdueDays > 20 ? "text-red-600" : 
+                            student.overdueDays > 10 ? "text-yellow-600" : "text-green-600"
+                          }`}>
+                            {student.overdueDays} days
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Priority</p>
+                          <div className="mt-1">{getPriorityBadge(student.priority)}</div>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Parent</p>
+                          <p className="font-medium truncate">{student.parentName}</p>
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell>
+
                       <div className="flex space-x-2">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => handleViewDetails(student)}
-                          className="hover:bg-blue-100 hover:text-blue-600 transition-all duration-300 hover:scale-110"
+                          className="flex-1 hover:bg-blue-100 hover:text-blue-600 transition-all duration-300 text-xs"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="mr-1 h-3 w-3" />
+                          Details
                         </Button>
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => handleSendReminder(student)}
-                          className="hover:bg-green-100 hover:text-green-600 transition-all duration-300 hover:scale-110"
+                          className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
                         >
-                          <Send className="h-4 w-4" />
+                          <Send className="mr-1 h-3 w-3" />
+                          Remind
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </CardContent>
+                  </Card>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            ) : (
+              // Desktop Table View
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <TableHead className="font-semibold">Roll No.</TableHead>
+                    <TableHead className="font-semibold">Name</TableHead>
+                    <TableHead className="font-semibold">Class</TableHead>
+                    <TableHead className="font-semibold">Due Amount</TableHead>
+                    <TableHead className="font-semibold">Overdue Days</TableHead>
+                    <TableHead className="font-semibold">Priority</TableHead>
+                    <TableHead className="font-semibold">Parent Contact</TableHead>
+                    <TableHead className="font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student, index) => (
+                    <TableRow
+                      key={student.id}
+                      className="hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 transition-all duration-300"
+                    >
+                      <TableCell className="font-medium text-blue-600">{student.rollNo}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                            {student.name.split(" ").map((n) => n[0]).join("")}
+                          </div>
+                          <span className="font-medium">{student.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{student.class}</TableCell>
+                      <TableCell className="font-bold text-red-600">₹{student.totalDue.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`font-medium ${
+                            student.overdueDays > 20
+                              ? "text-red-600"
+                              : student.overdueDays > 10
+                                ? "text-yellow-600"
+                                : "text-green-600"
+                          }`}
+                        >
+                          {student.overdueDays} days
+                        </span>
+                      </TableCell>
+                      <TableCell>{getPriorityBadge(student.priority)}</TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-1 text-sm">
+                            <Phone className="h-3 w-3 text-gray-400" />
+                            <span>{student.parentMobile}</span>
+                          </div>
+                          <div className="text-xs text-gray-500">{student.parentName}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleViewDetails(student)}
+                            className="hover:bg-blue-100 hover:text-blue-600 transition-all duration-300 hover:scale-110"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSendReminder(student)}
+                            className="hover:bg-green-100 hover:text-green-600 transition-all duration-300 hover:scale-110"
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-left duration-500">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group ${
+          animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
+          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-gray-700">Total Outstanding</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700">Total Outstanding</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-              <AlertCircle className="h-4 w-4 text-white" />
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-3xl font-bold text-red-600 mb-1">
+            <div className="text-xl sm:text-3xl font-bold text-red-600 mb-1">
               ₹{filteredStudents.reduce((sum, s) => sum + s.totalDue, 0).toLocaleString()}
             </div>
             <p className="text-xs text-gray-600">{filteredStudents.length} students</p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-100">
+        <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group ${
+          animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 to-yellow-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
+          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-yellow-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-gray-700">High Priority</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700">High Priority</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-              <AlertCircle className="h-4 w-4 text-white" />
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-3xl font-bold text-yellow-600 mb-1">
+            <div className="text-xl sm:text-3xl font-bold text-yellow-600 mb-1">
               {filteredStudents.filter((s) => s.priority === "High").length}
             </div>
             <p className="text-xs text-gray-600">Students</p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-bottom duration-500 delay-200">
+        <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group ${
+          animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
+          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-orange-500 to-orange-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-gray-700">Overdue &gt;30 Days</CardTitle>
-            <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg group-hover:scale-110 transition-transform duration-300 animate-pulse">
-              <AlertCircle className="h-4 w-4 text-white" />
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700">Overdue &gt;30 Days</CardTitle>
+            <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-3xl font-bold text-orange-600 mb-1">
+            <div className="text-xl sm:text-3xl font-bold text-orange-600 mb-1">
               {filteredStudents.filter((s) => s.overdueDays > 30).length}
             </div>
             <p className="text-xs text-gray-600">Critical cases</p>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all hover:scale-105 group animate-in slide-in-from-right duration-500 delay-300">
+        <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 group ${
+          animate ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+        }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 transform translate-x-8 -translate-y-8">
+          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 transform translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8">
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 opacity-10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
           </div>
 
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-gray-700">Average Due</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-700">Average Due</CardTitle>
             <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
-              <AlertCircle className="h-4 w-4 text-white" />
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
             </div>
           </CardHeader>
           <CardContent className="relative">
-            <div className="text-3xl font-bold text-blue-600 mb-1">
+            <div className="text-xl sm:text-3xl font-bold text-blue-600 mb-1">
               ₹
               {filteredStudents.length > 0
                 ? Math.round(
@@ -464,40 +611,40 @@ export default function FeeDues() {
 
       {/* Send Reminder Dialog */}
       <Dialog open={reminderDialogOpen} onOpenChange={setReminderDialogOpen}>
-        <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
               Send Fee Reminder
             </DialogTitle>
             <DialogDescription>
               Send reminder to {selectedStudent?.parentName} ({selectedStudent?.parentMobile})
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4 sm:space-y-6 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label>Student Name</Label>
-                <Input value={selectedStudent?.name || ""} disabled className="bg-gray-50" />
+                <Label className="text-sm sm:text-base">Student Name</Label>
+                <Input value={selectedStudent?.name || ""} disabled className="bg-gray-50 text-sm sm:text-base" />
               </div>
               <div className="space-y-2">
-                <Label>Due Amount</Label>
+                <Label className="text-sm sm:text-base">Due Amount</Label>
                 <Input
                   value={selectedStudent ? `₹${selectedStudent.totalDue.toLocaleString()}` : ""}
                   disabled
-                  className="bg-red-50 text-red-600 font-bold"
+                  className="bg-red-50 text-red-600 font-bold text-sm sm:text-base"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label>Parent Name</Label>
-                <Input value={selectedStudent?.parentName || ""} disabled className="bg-gray-50" />
+                <Label className="text-sm sm:text-base">Parent Name</Label>
+                <Input value={selectedStudent?.parentName || ""} disabled className="bg-gray-50 text-sm sm:text-base" />
               </div>
               <div className="space-y-2">
-                <Label>Contact Method</Label>
+                <Label className="text-sm sm:text-base">Contact Method</Label>
                 <Select defaultValue="sms">
-                  <SelectTrigger className="border-2 focus:border-red-400 transition-all duration-300">
+                  <SelectTrigger className="border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -510,35 +657,39 @@ export default function FeeDues() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="reminderMessage">Message</Label>
+              <Label htmlFor="reminderMessage" className="text-sm sm:text-base">Message</Label>
               <Textarea
                 id="reminderMessage"
                 value={reminderMessage}
                 onChange={(e) => setReminderMessage(e.target.value)}
                 rows={4}
-                className="border-2 focus:border-red-400 transition-all duration-300"
+                className="border-2 focus:border-red-400 transition-all duration-300 text-sm sm:text-base"
               />
             </div>
 
-            <div className="p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200">
+            <div className="p-3 sm:p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-200">
               <div className="flex items-center space-x-2 mb-2">
                 <AlertCircle className="h-4 w-4 text-red-500" />
-                <span className="font-medium text-red-700">Reminder Details</span>
+                <span className="font-medium text-red-700 text-sm sm:text-base">Reminder Details</span>
               </div>
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                 <p>• Overdue: {selectedStudent?.overdueDays} days</p>
                 <p>• Priority: {selectedStudent?.priority}</p>
                 <p>• Last Payment: {selectedStudent?.lastPayment || "Never"}</p>
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setReminderDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setReminderDialogOpen(false)}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
             <Button
               onClick={sendReminder}
-              className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Send className="mr-2 h-4 w-4" />
               Send Reminder
@@ -549,95 +700,102 @@ export default function FeeDues() {
 
       {/* Student Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="max-w-3xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            <DialogTitle className="text-xl sm:text-2xl bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
               Student Fee Details
             </DialogTitle>
             <DialogDescription>Complete fee information for {selectedStudent?.name}</DialogDescription>
           </DialogHeader>
           {selectedStudent && (
-            <div className="space-y-6 py-4">
-              <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-4 sm:space-y-6 py-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label className="font-semibold">Student Name</Label>
-                  <p className="p-2 bg-gray-50 rounded">{selectedStudent.name}</p>
+                  <Label className="font-semibold text-sm sm:text-base">Student Name</Label>
+                  <p className="p-2 bg-gray-50 rounded text-sm sm:text-base">{selectedStudent.name}</p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-semibold">Roll Number</Label>
-                  <p className="p-2 bg-gray-50 rounded">{selectedStudent.rollNo}</p>
+                  <Label className="font-semibold text-sm sm:text-base">Roll Number</Label>
+                  <p className="p-2 bg-gray-50 rounded text-sm sm:text-base">{selectedStudent.rollNo}</p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-semibold">Class</Label>
-                  <p className="p-2 bg-gray-50 rounded">{selectedStudent.class}</p>
+                  <Label className="font-semibold text-sm sm:text-base">Class</Label>
+                  <p className="p-2 bg-gray-50 rounded text-sm sm:text-base">{selectedStudent.class}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
-                  <Label className="font-semibold">Total Due Amount</Label>
-                  <p className="p-3 bg-red-50 rounded font-bold text-red-600 text-lg">
+                  <Label className="font-semibold text-sm sm:text-base">Total Due Amount</Label>
+                  <p className="p-3 bg-red-50 rounded font-bold text-red-600 text-base sm:text-lg">
                     ₹{selectedStudent.totalDue.toLocaleString()}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-semibold">Overdue Period</Label>
-                  <p className="p-3 bg-yellow-50 rounded font-bold text-yellow-600 text-lg">
+                  <Label className="font-semibold text-sm sm:text-base">Overdue Period</Label>
+                  <p className="p-3 bg-yellow-50 rounded font-bold text-yellow-600 text-base sm:text-lg">
                     {selectedStudent.overdueDays} days
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <Label className="font-semibold">Fee Breakdown</Label>
+                <Label className="font-semibold text-sm sm:text-base">Fee Breakdown</Label>
                 <div className="space-y-2">
                   {selectedStudent.feeHeads?.map((fee, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div 
+                      key={index} 
+                      className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                    >
                       <div>
-                        <p className="font-medium">{fee.name}</p>
-                        <p className="text-sm text-gray-500">Due Date: {fee.dueDate}</p>
+                        <p className="font-medium text-sm sm:text-base">{fee.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">Due Date: {fee.dueDate}</p>
                       </div>
-                      <p className="font-bold text-red-600 text-lg">₹{fee.amount.toLocaleString()}</p>
+                      <p className="font-bold text-red-600 text-sm sm:text-lg">₹{fee.amount.toLocaleString()}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4 pt-4 border-t">
                 <div className="space-y-3">
-                  <Label className="font-semibold">Parent Contact Information</Label>
+                  <Label className="font-semibold text-sm sm:text-base">Parent Contact Information</Label>
                   <div className="space-y-2">
                     <div className="p-2 bg-gray-50 rounded">
-                      <p className="font-medium">{selectedStudent.parentName}</p>
+                      <p className="font-medium text-sm sm:text-base">{selectedStudent.parentName}</p>
                     </div>
                     <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                       <Phone className="h-4 w-4 text-gray-400" />
-                      <span>{selectedStudent.parentMobile}</span>
+                      <span className="text-sm sm:text-base">{selectedStudent.parentMobile}</span>
                     </div>
                     <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                       <Mail className="h-4 w-4 text-gray-400" />
-                      <span>{selectedStudent.parentEmail}</span>
+                      <span className="text-sm sm:text-base break-all">{selectedStudent.parentEmail}</span>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <Label className="font-semibold">Payment Status</Label>
+                  <Label className="font-semibold text-sm sm:text-base">Payment Status</Label>
                   <div className="space-y-2">
                     <div className="p-2 bg-gray-50 rounded">
-                      <p className="text-sm text-gray-600">Priority Level</p>
+                      <p className="text-xs sm:text-sm text-gray-600">Priority Level</p>
                       <div className="mt-1">{getPriorityBadge(selectedStudent.priority)}</div>
                     </div>
                     <div className="p-2 bg-gray-50 rounded">
-                      <p className="text-sm text-gray-600">Last Payment</p>
-                      <p className="font-medium">{selectedStudent.lastPayment || "No previous payments"}</p>
+                      <p className="text-xs sm:text-sm text-gray-600">Last Payment</p>
+                      <p className="font-medium text-sm sm:text-base">{selectedStudent.lastPayment || "No previous payments"}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setDetailsDialogOpen(false)}
+              className="w-full sm:w-auto"
+            >
               Close
             </Button>
             <Button
@@ -645,7 +803,7 @@ export default function FeeDues() {
                 setDetailsDialogOpen(false)
                 handleSendReminder(selectedStudent)
               }}
-              className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Send className="mr-2 h-4 w-4" />
               Send Reminder
