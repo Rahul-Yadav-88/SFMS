@@ -18,7 +18,7 @@ import {
 import { Label } from "../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Textarea } from "../ui/textarea"
-import { Search, CreditCard, Download, Upload, Sparkles, Users, TrendingUp, FileText, MoreVertical } from "lucide-react"
+import { Search, CreditCard, Download, Upload, Sparkles, Users, TrendingUp, FileText, MoreVertical, Edit, Save, X } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +59,11 @@ export default function FeeCollection() {
   const [transactionId, setTransactionId] = useState("")
   const [remarks, setRemarks] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  // Edit Fees State
+  const [editingStudentId, setEditingStudentId] = useState(null)
+  const [editTotalFees, setEditTotalFees] = useState("")
+  const [editPaidAmount, setEditPaidAmount] = useState("")
 
   const [students, setStudents] = useState([
     {
@@ -166,6 +171,51 @@ export default function FeeCollection() {
     setPaymentMode("cash")
     setTransactionId("")
     setRemarks("")
+  }
+
+  // Edit Fees Functions
+  const handleEditFees = (student) => {
+    setEditingStudentId(student.id)
+    setEditTotalFees(student.totalFees.toString())
+    setEditPaidAmount(student.paidAmount.toString())
+  }
+
+  const handleSaveEdit = (studentId) => {
+    const totalFees = Number(editTotalFees)
+    const paidAmount = Number(editPaidAmount)
+    
+    if (totalFees < 0 || paidAmount < 0 || paidAmount > totalFees) {
+      console.error("Invalid fee values")
+      return
+    }
+
+    const updatedStudents = students.map(student => {
+      if (student.id === studentId) {
+        const dueAmount = totalFees - paidAmount
+        const status = dueAmount === 0 ? "Paid" : paidAmount > 0 ? "Partial" : "Due"
+        
+        return {
+          ...student,
+          totalFees,
+          paidAmount,
+          dueAmount,
+          status,
+          lastPayment: paidAmount > student.paidAmount ? new Date().toISOString().split('T')[0] : student.lastPayment
+        }
+      }
+      return student
+    })
+
+    setStudents(updatedStudents)
+    setEditingStudentId(null)
+    setEditTotalFees("")
+    setEditPaidAmount("")
+  }
+
+  const handleCancelEdit = () => {
+    setEditingStudentId(null)
+    setEditTotalFees("")
+    setEditPaidAmount("")
   }
 
   const handleFileUpload = (e) => {
@@ -548,6 +598,10 @@ export default function FeeCollection() {
                                 Collect Fee
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuItem onClick={() => handleEditFees(student)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Fees
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => generateReceipt(student)}>
                               <Download className="h-4 w-4 mr-2" />
                               Download Receipt
@@ -579,16 +633,27 @@ export default function FeeCollection() {
                         </div>
                       </div>
 
-                      {student.dueAmount > 0 && (
+                      <div className="flex space-x-2">
+                        {student.dueAmount > 0 && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleCollectFee(student)}
+                            className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
+                          >
+                            <CreditCard className="mr-2 h-3 w-3" />
+                            Collect Fee
+                          </Button>
+                        )}
                         <Button
                           size="sm"
-                          onClick={() => handleCollectFee(student)}
-                          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
+                          variant="outline"
+                          onClick={() => handleEditFees(student)}
+                          className="flex-1 text-xs hover:bg-gray-100 transition-all duration-300"
                         >
-                          <CreditCard className="mr-2 h-3 w-3" />
-                          Collect Fee
+                          <Edit className="mr-2 h-3 w-3" />
+                          Edit Fees
                         </Button>
-                      )}
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -624,31 +689,97 @@ export default function FeeCollection() {
                         </div>
                       </TableCell>
                       <TableCell className="text-xs sm:text-sm">{student.class}</TableCell>
-                      <TableCell className="font-bold text-xs sm:text-sm">₹{student.totalFees.toLocaleString()}</TableCell>
-                      <TableCell className="font-bold text-green-600 text-xs sm:text-sm">₹{student.paidAmount.toLocaleString()}</TableCell>
-                      <TableCell className="font-medium text-red-600 text-xs sm:text-sm">₹{student.dueAmount.toLocaleString()}</TableCell>
-                      <TableCell>{getStatusBadge(student.status)}</TableCell>
+                      
+                      {/* Total Fees Cell */}
                       <TableCell>
-                        <div className="flex space-x-2">
-                          {student.dueAmount > 0 && (
+                        {editingStudentId === student.id ? (
+                          <Input
+                            type="number"
+                            value={editTotalFees}
+                            onChange={(e) => setEditTotalFees(e.target.value)}
+                            className="w-24 text-xs sm:text-sm border-2 focus:border-blue-400"
+                            min="0"
+                          />
+                        ) : (
+                          <span className="font-bold text-xs sm:text-sm">₹{student.totalFees.toLocaleString()}</span>
+                        )}
+                      </TableCell>
+                      
+                      {/* Paid Amount Cell */}
+                      <TableCell>
+                        {editingStudentId === student.id ? (
+                          <Input
+                            type="number"
+                            value={editPaidAmount}
+                            onChange={(e) => setEditPaidAmount(e.target.value)}
+                            className="w-24 text-xs sm:text-sm border-2 focus:border-green-400"
+                            min="0"
+                            max={editTotalFees}
+                          />
+                        ) : (
+                          <span className="font-bold text-green-600 text-xs sm:text-sm">₹{student.paidAmount.toLocaleString()}</span>
+                        )}
+                      </TableCell>
+                      
+                      {/* Due Amount Cell */}
+                      <TableCell className="font-medium text-red-600 text-xs sm:text-sm">
+                        ₹{student.dueAmount.toLocaleString()}
+                      </TableCell>
+                      
+                      <TableCell>{getStatusBadge(student.status)}</TableCell>
+                      
+                      {/* Actions Cell */}
+                      <TableCell>
+                        {editingStudentId === student.id ? (
+                          <div className="flex space-x-2">
                             <Button
                               size="sm"
-                              onClick={() => handleCollectFee(student)}
-                              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
+                              onClick={() => handleSaveEdit(student.id)}
+                              className="bg-green-600 hover:bg-green-700 text-xs"
                             >
-                              <CreditCard className="mr-2 h-4 w-4" />
-                              Collect Fee
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
                             </Button>
-                          )}
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => generateReceipt(student)}
-                            className="text-xs hover:bg-gray-100 transition-all duration-300"
-                          >
-                             <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelEdit}
+                              className="text-xs"
+                            >
+                              <X className="h-3 w-3 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex space-x-2">
+                            {student.dueAmount > 0 && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleCollectFee(student)}
+                                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 text-xs"
+                              >
+                                <CreditCard className="mr-2 h-4 w-4" />
+                                Collect Fee
+                              </Button>
+                            )}
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleEditFees(student)}
+                              className="text-xs hover:bg-gray-100 transition-all duration-300"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => generateReceipt(student)}
+                              className="text-xs hover:bg-gray-100 transition-all duration-300"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
